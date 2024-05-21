@@ -31,7 +31,33 @@ app.post('/register', async (req, res) => {
         return res.status(201).send(newUser);
     } catch (error) {
         console.log(error.message);
-        response.status(500).send({ message: error.message });
+        res.status(500).send({ message: error.message });
+    }
+});
+
+app.get('/users', async (req, res) => {
+    try {
+        const users = await User.find({});
+
+        return res.status(201).send({
+            count: users.length,
+            data: users,
+        });
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).send({ message: error.message });
+    }
+});
+
+app.get('/users/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const user = await User.findById(id);
+
+        return res.status(201).send(user);
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).send({ message: error.message });
     }
 });
 

@@ -1,7 +1,7 @@
 import express from 'express';
 import { PORT, mongoDBURL } from './config.js';
 import mongoose from 'mongoose';
-
+import bcrypt from 'bcrypt';
 import { User } from './models/User.js';
 
 const app = express();
@@ -21,7 +21,12 @@ app.post('/register', async (req, res) => {
             });
         }
 
-        const newUser = await User.create({ name, email, password });
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = await User.create({
+            name,
+            email,
+            password: hashedPassword,
+        });
 
         return res.status(201).send(newUser);
     } catch (error) {

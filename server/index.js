@@ -7,13 +7,16 @@ import cors from 'cors';
 const app = express();
 
 app.use(express.json());
-app.use(
+app.use(express.urlencoded({ extended: false }));
+
+app.use(cors());
+/* app.use(
     cors({
         origin: `http://localhost:${PORT}/`,
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
         allowedHeaders: ['Content-Type'],
     })
-);
+); */
 
 app.get('/', (req, res) => {
     console.log(req);

@@ -5,15 +5,22 @@ import { User } from '../models/User.js';
 import passport from 'passport';
 import flash from 'express-flash';
 import session from 'express-session';
-import initialize from './passport-config.js';
+import initializePassport from './passport-config.js';
 
 const router = express.Router();
 
 dotenv.config();
-initialize(passport, async (email) => {
-    const [user] = await User.find({ email: email });
-    return user;
-});
+initializePassport(
+    passport,
+    async (email) => {
+        const [user] = await User.find({ email: email });
+        return user;
+    },
+    async (id) => {
+        const user = await User.findById(id);
+        return user;
+    }
+);
 router.use(flash());
 router.use(
     session({
@@ -24,6 +31,14 @@ router.use(
 );
 router.use(passport.initialize());
 router.use(passport.session());
+
+const checkAuthenticated = (req, res, next) => {
+    if (req.isAuthenticated()) {
+        console.log('You are logged in.');
+        return next();
+    }
+    res.status(404).send({ message: 'You are not logged in.' });
+};
 
 router.post('/register', async (req, res) => {
     const { name, email, password } = req.body;
@@ -51,13 +66,22 @@ router.post('/register', async (req, res) => {
 router.post(
     '/login',
     passport.authenticate('local', {
-        successRedirect: '/',
+        successRedirect: '/users/authenticated',
         failureRedirect: '/users/login',
-        failureFlash: true,
     })
 );
 
-router.get('/', async (req, res) => {
+router.get('/authenticated', (req, res) => {
+    return res.status(201).send({
+        authenticatedUserId: req.session.passport.user,
+    });
+});
+
+router.get('/', checkAuthenticated, async (req, res) => {
+    const loggedInUser = await User.findById(req.session.passport.user);
+    if (loggedInUser) {
+        console.log('You are logged in as:', loggedInUser.name);
+    }
     try {
         const users = await User.find({});
 

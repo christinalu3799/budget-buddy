@@ -7,25 +7,33 @@ import Nav from 'react-bootstrap/Nav';
 
 const App = () => {
     return (
-        <>
+        <div className='h-[100vh] w-[100%] relative'>
+            <Nav
+                activeKey='/'
+                className='bg-white w-full absolute flex flex-row justify-end'
+            >
+                <Nav.Item>
+                    <Nav.Link href='/' className='text-dark'>
+                        HOME
+                    </Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                    <Nav.Link href='/users/register' className='text-dark'>
+                        REGISTER
+                    </Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                    <Nav.Link href='/users/login' className='text-dark'>
+                        LOGIN
+                    </Nav.Link>
+                </Nav.Item>
+            </Nav>
             <Routes>
                 <Route path='/' element={<Home />} />
                 <Route path='/users/register' element={<Register />} />
                 <Route path='/users/login' element={<Login />} />
             </Routes>
-            <div className='h-8'></div>
-            <Nav activeKey='/' className='bg-blue-100'>
-                <Nav.Item>
-                    <Nav.Link href='/'>HOME</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                    <Nav.Link href='/users/register'>REGISTER</Nav.Link>
-                </Nav.Item>
-                <Nav.Item>
-                    <Nav.Link href='/users/login'>LOGIN</Nav.Link>
-                </Nav.Item>
-            </Nav>
-        </>
+        </div>
     );
 };
 

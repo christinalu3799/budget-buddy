@@ -1,0 +1,12 @@
+* {
+    margin: 0;
+    padding: 0
+}
+
+body {
+   font-family: 'Dosis', sans-serif;
+}
+
+.register-btn, .login-btn {
+    background-color: #A3C097 !important;
+}

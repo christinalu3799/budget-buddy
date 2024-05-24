@@ -4,6 +4,7 @@ import Register from './pages/Register';
 import Login from './pages/Login';
 import Home from './pages/Home';
 import Nav from 'react-bootstrap/Nav';
+import Dashboard from './pages/Dashboard';
 
 const App = () => {
     return (
@@ -18,20 +19,21 @@ const App = () => {
                     </Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                    <Nav.Link href='/users/register' className='text-dark'>
+                    <Nav.Link href='/register' className='text-dark'>
                         REGISTER
                     </Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                    <Nav.Link href='/users/login' className='text-dark'>
+                    <Nav.Link href='/login' className='text-dark'>
                         LOGIN
                     </Nav.Link>
                 </Nav.Item>
             </Nav>
             <Routes>
                 <Route path='/' element={<Home />} />
-                <Route path='/users/register' element={<Register />} />
-                <Route path='/users/login' element={<Login />} />
+                <Route path='/register' element={<Register />} />
+                <Route path='/login' element={<Login />} />
+                <Route path='/dashboard' element={<Dashboard />} />
             </Routes>
         </div>
     );

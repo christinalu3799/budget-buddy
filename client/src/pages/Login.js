@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { useAuthentication } from '../hooks/useAuthentication';
@@ -9,8 +9,16 @@ import '../App.css';
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const { login } = useAuthentication();
+    const { login, user, redirectToDashboard } = useAuthentication();
 
+    useEffect(() => {
+        if (user) {
+            console.log(
+                `You are already logged in as: ${user.email}\nRedirecting to dashboard...`
+            );
+            redirectToDashboard();
+        }
+    });
     const onEmailInput = ({ target: { value: email } }) => setEmail(email);
     const onPasswordInput = ({ target: { value: password } }) =>
         setPassword(password);
@@ -26,12 +34,10 @@ const Login = () => {
             headers: { 'Content-Type': 'application/json' },
         })
             .then((res) => {
-                console.log('Successful login post request =', res);
                 login({ email });
-                console.log('CLIENT - successfully logged in!');
             })
             .catch((res) => {
-                console.log('ERROR', res);
+                console.log(res);
             });
     };
     return (

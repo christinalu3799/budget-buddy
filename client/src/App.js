@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Home from './pages/Home';
 import Nav from 'react-bootstrap/Nav';
 import Dashboard from './pages/Dashboard';
+import { AuthProvider } from './hooks/useAuthentication';
 
 const App = () => {
     return (
@@ -29,12 +30,14 @@ const App = () => {
                     </Nav.Link>
                 </Nav.Item>
             </Nav>
-            <Routes>
-                <Route path='/' element={<Home />} />
-                <Route path='/register' element={<Register />} />
-                <Route path='/login' element={<Login />} />
-                <Route path='/dashboard' element={<Dashboard />} />
-            </Routes>
+            <AuthProvider>
+                <Routes>
+                    <Route path='/' element={<Home />} />
+                    <Route path='/register' element={<Register />} />
+                    <Route path='/login' element={<Login />} />
+                    <Route path='/dashboard' element={<Dashboard />} />
+                </Routes>
+            </AuthProvider>
         </div>
     );
 };

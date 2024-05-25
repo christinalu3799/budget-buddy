@@ -18,16 +18,13 @@ const initializePassport = (passport, getUserByEmail, getUserById) => {
         }
     };
     passport.use(
-        new LocalStrategy({ usernameField: 'email' }, authenticatedUser)
+        new LocalStrategy(
+            { usernameField: 'email', passwordField: 'password' },
+            authenticatedUser
+        )
     );
-    passport.serializeUser((user, done) => {
-        console.log('Serialized');
-        return done(null, user._id);
-    });
-    passport.deserializeUser((id, done) => {
-        console.log('Deserialized', id);
-        return done(null, getUserById(id));
-    });
+    passport.serializeUser((user, done) => done(null, user.id));
+    passport.deserializeUser((id, done) => done(null, getUserById(id)));
 };
 
 export default initializePassport;

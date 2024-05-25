@@ -11,7 +11,7 @@ const Register = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
-    const onFormSubmit = async (e) => {
+    const handleRegister = async (e) => {
         e.preventDefault();
         await axios({
             method: 'post',
@@ -41,7 +41,7 @@ const Register = () => {
     return (
         <div className='bg-pink-100 h-[100vh] flex flex-col justify-center items-center'>
             <p className='text-8xl mb-12 font-gloria'>Register</p>
-            <Form onSubmit={onFormSubmit} className='flex flex-col w-[300px]'>
+            <Form onSubmit={handleRegister} className='flex flex-col w-[300px]'>
                 <Form.Label htmlFor='inputName'>Name</Form.Label>
                 <Form.Control
                     type='name'

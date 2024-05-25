@@ -14,16 +14,15 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cors());
-/* app.use(
-    cors({
-        origin: `http://localhost:${PORT}/`,
-        methods: ['GET', 'POST', 'PUT', 'DELETE'],
-        allowedHeaders: ['Content-Type'],
-    })
-); */
+app.use(cors({ origin: true, credentials: true }));
 
-// app.use('/users', usersRoutes);
+// app.use(
+//     cors({
+//         origin: `http://localhost:${PORT}/`,
+//         methods: ['GET', 'POST', 'PUT', 'DELETE'],
+//         allowedHeaders: ['Content-Type'],
+//     })
+// );
 
 dotenv.config();
 initializePassport(
@@ -37,6 +36,7 @@ initializePassport(
         return user;
     }
 );
+
 app.use(flash());
 app.use(
     session({
@@ -49,95 +49,59 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(methodOverride('_method'));
 
-const checkAuthenticated = (req, res, next) => {
-    if (req.isAuthenticated()) {
-        console.log('You are authenticated.');
-        return next();
-    }
-    res.redirect('/login');
-};
-
-const checkNotAuthenticated = (req, res, next) => {
-    if (req.isAuthenticated()) {
-        console.log('You are not authenticated. Please log in.');
-        return res.redirect('/');
-    }
-    next();
-};
-
-app.get('/', checkAuthenticated, async (req, res) => {
-    return res.status(200).send('You are now on the home page.');
-});
-
-app.get('/login', checkNotAuthenticated, (req, res) => {
-    return res.status(201).send({ message: 'You are now on the login page.' });
-});
-
-app.get('/authenticated', (req, res) => {
-    return res.status(201).send({
-        authenticatedUserId: req.session.passport.user,
-    });
-});
-
-app.post('/register', checkNotAuthenticated, async (req, res) => {
-    const { name, email, password } = req.body;
-    try {
-        if (!name || !email || !password) {
-            return response.status(400).send({
-                message: 'Missing required fields.',
-            });
-        }
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = await User.create({
-            name,
-            email,
-            password: hashedPassword,
-        });
-
-        return res.status(201).send(newUser);
-    } catch (error) {
-        console.log(error.message);
-        res.status(500).send({ message: error.message });
-    }
-});
-
-app.post(
-    '/login',
-    checkNotAuthenticated,
-    passport.authenticate('local', {
-        successRedirect: '/',
-        failureRedirect: '/login',
-    })
-);
-
-app.get('/', checkAuthenticated, async (req, res) => {
-    const loggedInUser = await User.findById(req.session.passport.user);
-    if (loggedInUser) {
-        console.log('You are logged in as:', loggedInUser.name);
-    }
-    try {
-        const users = await User.find({});
-
-        return res.status(201).send({
-            count: users.length,
-            data: users,
-        });
-    } catch (error) {
-        console.log(error.message);
-        res.status(500).send({ message: error.message });
-    }
-});
-
 app.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const user = await User.findById(id);
 
         return res.status(201).send(user);
-    } catch (error) {
-        console.log(error.message);
-        res.status(500).send({ message: error.message });
+    } catch (e) {
+        console.log(e.message);
+        res.status(500).send({ message: e.message });
+    }
+});
+
+app.post(
+    '/register',
+    /*  checkNotAuthenticated, */ async (req, res) => {
+        const { name, email, password } = req.body;
+        try {
+            if (!name || !email || !password) {
+                return response.status(400).send({
+                    message: 'Missing required fields.',
+                });
+            }
+
+            const hashedPassword = await bcrypt.hash(password, 10);
+            const newUser = await User.create({
+                name,
+                email,
+                password: hashedPassword,
+            });
+
+            return res.status(201).send(newUser);
+        } catch (error) {
+            console.log(error.message);
+            res.status(500).send({ message: error.message });
+        }
+    }
+);
+
+app.post('/login', async (req, res, next) => {
+    try {
+        await passport.authenticate('local', (err, user, options) => {
+            if (!user) {
+                console.log('options = ', options);
+                return res.status(401).send({ message: options });
+            }
+            return res.status(200).send({
+                authenticated: true,
+                message: 'Login successfully',
+            });
+        })(req, res, next);
+    } catch (e) {
+        console.log(e.message);
+        res.status(500).send({ message: e.message });
     }
 });
 

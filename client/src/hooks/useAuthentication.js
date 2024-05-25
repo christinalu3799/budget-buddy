@@ -18,8 +18,13 @@ export const AuthProvider = ({ children }) => {
         navigate('/', { replace: true });
     };
 
+    const redirectToDashboard = () => {
+        navigate('/dashboard');
+    };
     return (
-        <AuthContext.Provider value={{ user, login, logout }}>
+        <AuthContext.Provider
+            value={{ user, login, logout, redirectToDashboard }}
+        >
             {children}
         </AuthContext.Provider>
     );

@@ -6,6 +6,7 @@ const Dashboard = () => {
     const { logout } = useAuthentication();
     const handleLogout = () => {
         logout();
+        console.log('Successfully logged out.');
     };
     const { user } = useAuthentication();
     if (!user) {

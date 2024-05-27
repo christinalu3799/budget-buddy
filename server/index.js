@@ -1,20 +1,24 @@
+const express = require('express');
 const app = express();
-import dotenv from 'dotenv';
-import express from 'express';
-import { PORT, mongoDBURL } from './config.js';
-import mongoose from 'mongoose';
-import cors from 'cors';
-import { User } from './entities/User.js';
-import passport from 'passport';
-import flash from 'express-flash';
-import session from 'express-session';
-import initializePassport from './config/passport-config.js';
-import methodOverride from 'method-override';
+const dotenv = require('dotenv');
+const { PORT, mongoDBURL } = require('./config.js');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const User = require('./entities/User.js');
+const passport = require('passport');
+const flash = require('express-flash');
+const session = require('express-session');
+const initializePassport = require('./config/passport-config.js');
+const methodOverride = require('method-override');
 
 dotenv.config();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors({ origin: true, credentials: true }));
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
+});
 
 // app.use(
 //     cors({
@@ -48,7 +52,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 app.use(methodOverride('_method'));
 
-import AuthRouter from './routes/Auth.route.js';
+const AuthRouter = require('./routes/AuthRouter.js');
 app.use('/', AuthRouter);
 
 mongoose

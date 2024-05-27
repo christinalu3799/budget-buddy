@@ -1,6 +1,6 @@
-import express from 'express';
+const express = require('express');
 const AuthRouter = express.Router();
-import AuthenticationService from '../services/AuthenticationService.js';
+const AuthenticationService = require('../services/AuthenticationService.js');
 
 const throwRequestErrorAndResponse = (e, res) => {
     console.log(e.message);
@@ -28,25 +28,7 @@ AuthRouter.get('/:id', async (req, res) => {
     }
 });
 
-AuthRouter.post('/register', async (req, res) => {
-    const { name, email, password } = req.body;
-    try {
-        if (!name || !email || !password) {
-            return response.status(400).send({
-                message: 'Missing required fields.',
-            });
-        }
-        const newUser = await AuthenticationService.registerNewUser({
-            name,
-            email,
-            password,
-        });
-
-        return res.status(201).send(newUser);
-    } catch (e) {
-        throwRequestErrorAndResponse(e, res);
-    }
-});
+AuthRouter.post('/register', AuthenticationService.registerNewUser);
 
 AuthRouter.post('/login', async (req, res, next) => {
     try {
@@ -94,4 +76,5 @@ AuthRouter.delete('/:id', async (req, res) => {
         throwRequestErrorAndResponse(e, res);
     }
 });
-export default AuthRouter;
+
+module.exports = AuthRouter;

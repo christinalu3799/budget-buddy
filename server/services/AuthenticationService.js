@@ -1,6 +1,6 @@
-import bcrypt from 'bcrypt';
-import { User } from '../entities/User.js';
-import passport from 'passport';
+const bcrypt = require('bcrypt');
+const User = require('../entities/User.js');
+const passport = require('passport');
 
 class AuthenticationService {
     constructor() {}
@@ -26,15 +26,25 @@ class AuthenticationService {
         return userToDelete;
     }
 
-    async registerNewUser({ name, email, password }) {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = await User.create({
-            name,
-            email,
-            password: hashedPassword,
-        });
-
-        return newUser;
+    async registerNewUser(req, res) {
+        const { name, email, password } = req.body;
+        try {
+            if (!name || !email || !password) {
+                return response.status(400).send({
+                    message: 'Missing required fields.',
+                });
+            }
+            const hashedPassword = await bcrypt.hash(password, 10);
+            const newUser = await User.create({
+                name,
+                email,
+                password: hashedPassword,
+            });
+            return res.status(201).send(newUser);
+        } catch (e) {
+            console.log(e.message);
+            res.status(500).send({ message: e.message });
+        }
     }
 
     async loginUser(req, res, next) {
@@ -66,5 +76,4 @@ class AuthenticationService {
         });
     }
 }
-
-export default new AuthenticationService();
+module.exports = new AuthenticationService();

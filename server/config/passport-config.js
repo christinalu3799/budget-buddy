@@ -1,5 +1,5 @@
-import LocalStrategy from 'passport-local';
-import bcrypt from 'bcrypt';
+const LocalStrategy = require('passport-local');
+const bcrypt = require('bcrypt');
 
 const initializePassport = (passport, getUserByEmail, getUserById) => {
     const authenticatedUser = async (email, password, done) => {
@@ -36,4 +36,4 @@ const initializePassport = (passport, getUserByEmail, getUserById) => {
     });
 };
 
-export default initializePassport;
+module.exports = initializePassport;

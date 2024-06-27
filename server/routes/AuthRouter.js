@@ -30,13 +30,7 @@ AuthRouter.get('/:id', async (req, res) => {
 
 AuthRouter.post('/register', AuthenticationService.registerNewUser);
 
-AuthRouter.post('/login', async (req, res, next) => {
-    try {
-        await AuthenticationService.loginUser(req, res, next);
-    } catch (e) {
-        throwRequestErrorAndResponse(e, res);
-    }
-});
+AuthRouter.post('/login', AuthenticationService.loginUser);
 
 AuthRouter.put('/:id', async (req, res) => {
     try {

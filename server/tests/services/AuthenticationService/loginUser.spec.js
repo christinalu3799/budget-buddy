@@ -1,50 +1,80 @@
 const AuthenticationService = require('../../../services/AuthenticationService.js');
-const User = require('../../../entities/User.js');
-const bcrypt = require('bcrypt');
-
-jest.mock('../../../entities/User.js');
-jest.spyOn(bcrypt, 'hash').mockReturnValue('thisIsMyHashedPassword');
-
-const req = {
-    body: {
-        name: 'Test',
-        email: 'test@email',
-        password: '1234',
-    },
-};
+const passport = require('passport');
 
 const res = { send: jest.fn() };
 res.status = jest.fn(() => res);
 
-it(`sends a status code of 201 when the user is successfully registered`, async () => {
-    User.create.mockImplementationOnce(() => ({
-        name: 'Test',
-        email: 'test@email',
-        password: '1234',
-    }));
+describe('credentials provided does not match a valid user', () => {
+    beforeEach(async () => {
+        const req = {};
+        const passportAuthenticateImplementation =
+            (authType, callback) => () => {
+                callback(null, null, 'Incorrect login credentials.');
+            };
+        passport.authenticate = jest.fn(passportAuthenticateImplementation);
 
-    await AuthenticationService.registerNewUser(req, res);
-
-    expect(res.status).toHaveBeenCalledWith(201);
-    expect(res.send).toHaveBeenCalledTimes(1);
-    expect(bcrypt.hash).toHaveBeenCalledWith('1234', 10);
-    expect(User.create).toHaveBeenCalledWith({
-        email: 'test@email',
-        name: 'Test',
-        password: 'thisIsMyHashedPassword',
+        await AuthenticationService.loginUser(req, res);
+    });
+    it(`sends a status code of 401`, () => {
+        expect(res.status).toHaveBeenCalledWith(401);
+    });
+    it(`sends the error message`, () => {
+        expect(res.send).toHaveBeenCalledWith({
+            message: 'Incorrect login credentials.',
+        });
     });
 });
 
-it(`sends a status code of 500 when the user registration fails`, async () => {
-    User.create.mockImplementationOnce(() => {
-        throw new Error('Failed to register user.');
+describe(`credentials provided matches a valid user and request to login user fails`, () => {
+    beforeEach(async () => {
+        const passportAuthenticateImplementation =
+            (authType, callback) => () => {
+                callback(null, {}, null);
+            };
+
+        passport.authenticate = jest.fn(passportAuthenticateImplementation);
+
+        const req = {};
+        req.logIn = jest.fn((user, callback) => {
+            callback(new Error('login error'));
+        });
+        req.isAuthenticated = jest.fn();
+
+        jest.spyOn(AuthenticationService, '_throwRequestErrorAndResponse');
+        await AuthenticationService.loginUser(req, res);
     });
+    it(`sends a status code of 500`, async () => {
+        expect(res.status).toHaveBeenCalledWith(500);
+    });
+    it(`sends the success message`, async () => {
+        expect(res.send).toHaveBeenCalledWith({
+            message: 'Error: login error',
+        });
+    });
+});
 
-    await AuthenticationService.registerNewUser(req, res);
+describe(`credentials provided matches a valid user and request to login user is successful`, () => {
+    beforeEach(async () => {
+        const passportAuthenticateImplementation =
+            (authType, callback) => () => {
+                callback(null, {}, null);
+            };
 
-    expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.send).toHaveBeenCalledTimes(1);
-    expect(res.send).toHaveBeenCalledWith({
-        message: 'Failed to register user.',
+        passport.authenticate = jest.fn(passportAuthenticateImplementation);
+        const req = {};
+        req.logIn = jest.fn((user, callback) => {
+            callback(null);
+        });
+        req.isAuthenticated = jest.fn(() => {});
+
+        await AuthenticationService.loginUser(req, res);
+    });
+    it(`sends a status code of 200`, async () => {
+        expect(res.status).toHaveBeenCalledWith(200);
+    });
+    it(`sends the success message`, async () => {
+        expect(res.send).toHaveBeenCalledWith({
+            message: 'Login successfully',
+        });
     });
 });

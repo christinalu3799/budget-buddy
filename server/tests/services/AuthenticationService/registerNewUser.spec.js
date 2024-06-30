@@ -16,6 +16,60 @@ const req = {
 const res = { send: jest.fn() };
 res.status = jest.fn(() => res);
 
+it(`throws an error when the password is missing`, async () => {
+    const req = {
+        body: {
+            name: 'Test',
+            email: 'test@email',
+            password: undefined,
+        },
+    };
+
+    await AuthenticationService.registerNewUser(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({
+        message: 'Missing required fields.',
+    });
+    expect(bcrypt.hash).not.toHaveBeenCalled();
+});
+
+it(`throws an error when the email is missing`, async () => {
+    const req = {
+        body: {
+            name: 'Test',
+            email: undefined,
+            password: '1234',
+        },
+    };
+
+    await AuthenticationService.registerNewUser(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({
+        message: 'Missing required fields.',
+    });
+    expect(bcrypt.hash).not.toHaveBeenCalled();
+});
+
+it(`throws an error when the name is missing`, async () => {
+    const req = {
+        body: {
+            name: undefined,
+            email: 'test@email.com',
+            password: '1234',
+        },
+    };
+
+    await AuthenticationService.registerNewUser(req, res);
+
+    expect(res.status).toHaveBeenCalledWith(400);
+    expect(res.send).toHaveBeenCalledWith({
+        message: 'Missing required fields.',
+    });
+    expect(bcrypt.hash).not.toHaveBeenCalled();
+});
+
 it(`sends a status code of 201 when the user is successfully registered`, async () => {
     User.create.mockImplementationOnce(() => ({
         name: 'Test',

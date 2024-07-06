@@ -4,7 +4,7 @@ const passport = require('passport');
 const res = { send: jest.fn() };
 res.status = jest.fn(() => res);
 
-describe('credentials provided does not match a valid user', () => {
+describe('credentials provided do not match a valid user', () => {
     beforeEach(async () => {
         const req = {};
         const passportAuthenticateImplementation =
@@ -46,7 +46,7 @@ describe(`credentials provided matches a valid user and request to login user fa
     it(`sends a status code of 500`, async () => {
         expect(res.status).toHaveBeenCalledWith(500);
     });
-    it(`sends the success message`, async () => {
+    it(`sends the failure message`, async () => {
         expect(res.send).toHaveBeenCalledWith({
             message: 'Error: login error',
         });

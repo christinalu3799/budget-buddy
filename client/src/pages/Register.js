@@ -1,15 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import '../App.css';
 import axios from 'axios';
+import '../App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { useAuthentication } from '../hooks/useAuthentication';
 import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
+    const { user, redirectToDashboard } = useAuthentication();
+    useEffect(() => {
+        if (user) {
+            console.log(
+                `You are already logged in as: ${user.email}\nRedirecting to dashboard...`
+            );
+            redirectToDashboard();
+        }
+    });
+
     const navigate = useNavigate();
     const handleRegister = async (e) => {
         e.preventDefault();
@@ -24,13 +36,14 @@ const Register = () => {
                 navigate('/login');
             })
             .catch((res) => {
-                console.log(res);
+                console.log('Error registering: ', res);
             });
 
         setName('');
         setEmail('');
         setPassword('');
     };
+
     const onNameInput = ({ target: { value: name } }) => {
         setName(name);
     };

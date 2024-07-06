@@ -9,8 +9,8 @@ import '../App.css';
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const { login, user, redirectToDashboard } = useAuthentication();
 
+    const { login, user, redirectToDashboard } = useAuthentication();
     useEffect(() => {
         if (user) {
             console.log(
@@ -19,27 +19,29 @@ const Login = () => {
             redirectToDashboard();
         }
     });
+
     const onEmailInput = ({ target: { value: email } }) => setEmail(email);
     const onPasswordInput = ({ target: { value: password } }) =>
         setPassword(password);
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        await axios({
-            method: 'post',
-            origin: true,
-            withCredentials: true,
-            url: 'http://localhost:3000/login',
-            data: { email, password },
-            headers: { 'Content-Type': 'application/json' },
-        })
-            .then((res) => {
+        try {
+            await axios({
+                method: 'post',
+                origin: true,
+                withCredentials: true,
+                url: 'http://localhost:3000/login',
+                data: { email, password },
+                headers: { 'Content-Type': 'application/json' },
+            }).then((res) => {
                 login({ email });
-            })
-            .catch((res) => {
-                console.log(res);
             });
+        } catch (e) {
+            console.log('Incorrect credentials. Error: ', e.message);
+        }
     };
+
     return (
         <div className='bg-pink-100 h-[100vh] flex flex-col justify-center items-center'>
             <p className='text-8xl mb-12 font-gloria'>Login</p>

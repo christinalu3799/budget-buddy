@@ -18,6 +18,7 @@ const Register = () => {
             console.log(
                 `You are already logged in as: ${user.email}\nRedirecting to dashboard...`
             );
+
             redirectToDashboard();
         }
     });

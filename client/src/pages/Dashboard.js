@@ -1,25 +1,22 @@
 import { Navigate } from 'react-router-dom';
 import { useAuthentication } from '../hooks/useAuthentication';
-import Nav from 'react-bootstrap/Nav';
+import Button from 'react-bootstrap/Button';
 
 const Dashboard = () => {
-    const { logout } = useAuthentication();
-    const handleLogout = () => {
-        logout();
-        console.log('Successfully logged out.');
-    };
     const { user } = useAuthentication();
     if (!user) {
         return <Navigate to='/login' />;
     }
+
     return (
-        <div className='bg-pink-100 h-[100vh] flex flex-col justify-center items-center'>
-            <p className='text-8xl mb-12 font-gloria'>Dashboard</p>
-            <Nav.Item>
-                <Nav.Link onClick={handleLogout} className='text-dark'>
-                    LOGOUT
-                </Nav.Link>
-            </Nav.Item>
+        <div className=' h-[100vh] flex flex-col justify-right items-center pt-16'>
+            <p className='text-2xl mb-12 font-gloria'>Dashboard</p>
+            <Button
+                variant='primary'
+                as='input'
+                type='submit'
+                value='Add Account'
+            />
         </div>
     );
 };

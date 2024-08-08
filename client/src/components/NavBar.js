@@ -15,7 +15,6 @@ const NavLink = ({ name, showing, link, cb }) => {
 };
 const NavBar = () => {
     const { user, logout } = useAuthentication();
-    console.log('user = ', !!user);
     const handleLogout = () => {
         logout();
         console.log('Successfully logged out.');

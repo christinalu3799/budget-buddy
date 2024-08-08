@@ -55,6 +55,9 @@ app.use(methodOverride('_method'));
 const AuthRouter = require('./routes/AuthRouter.js');
 app.use('/', AuthRouter);
 
+const AccountRouter = require('./routes/AccountRouter.js');
+app.use('/account', AccountRouter);
+
 mongoose
     .connect(mongoDBURL)
     .then(() => {

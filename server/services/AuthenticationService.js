@@ -98,9 +98,11 @@ class AuthenticationService {
                     if (err) {
                         throw new Error(err);
                     }
+
                     return res.status(200).send({
                         authenticated: req.isAuthenticated(),
                         message: 'Login successfully',
+                        userId: user.id,
                     });
                 });
             })(req, res, next);

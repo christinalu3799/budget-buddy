@@ -4,16 +4,22 @@ class AccountRepo {
     constructor() {}
 
     async create(req, res) {
-        const { userId, name, startingBalance, balance } = req.body;
+        if (!req.isAuthenticated()) {
+            return res.status(400).send({
+                message: 'You are not logged in.',
+            });
+        }
+
+        const { name, startingBalance, balance } = req.body;
         try {
-            if (!userId || !name || !startingBalance || !balance) {
+            if (!name || !startingBalance || !balance) {
                 return res.status(400).send({
                     message: 'Missing required fields.',
                 });
             }
 
             const account = await Account.create({
-                userId,
+                userId: req.user.id,
                 name,
                 startingBalance,
                 balance,
@@ -21,8 +27,7 @@ class AccountRepo {
 
             return res.status(201).send({
                 message: 'Successfully created a new account',
-                account,
-                accountId: account.id,
+                isAuthenticated: req.isAuthenticated(),
             });
         } catch (e) {
             return this._throwRequestErrorAndResponse(e, res);
@@ -50,6 +55,26 @@ class AccountRepo {
             return res
                 .status(201)
                 .send({ message: 'Successfully updated account.' });
+        } catch (e) {
+            return this._throwRequestErrorAndResponse(e, res);
+        }
+    }
+
+    async delete(req, res) {
+        if (!req.isAuthenticated()) {
+            return res.status(400).send({
+                message: 'You are not logged in.',
+            });
+        }
+
+        const userId = req.params.id;
+        try {
+            const { deletedCount } = await Account.deleteMany({ userId });
+
+            return res.status(201).send({
+                message: 'Successfully updated account.',
+                deletedCount,
+            });
         } catch (e) {
             return this._throwRequestErrorAndResponse(e, res);
         }

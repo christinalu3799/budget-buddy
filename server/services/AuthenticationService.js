@@ -116,6 +116,7 @@ class AuthenticationService {
             if (err) {
                 return next(err);
             }
+
             return res.status(200).send({
                 authenticated: req.isAuthenticated(),
                 message: 'Logout successfully',

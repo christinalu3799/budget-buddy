@@ -20,6 +20,8 @@ app.use((err, req, res, next) => {
     res.status(500).send('Something broke!');
 });
 
+const bodyParser = require('body-parser');
+app.use(bodyParser.json());
 // app.use(
 //     cors({
 //         origin: `http://localhost:${PORT}/`,

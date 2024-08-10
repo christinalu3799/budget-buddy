@@ -6,12 +6,11 @@ class AccountService {
     async findAccounts(req, res) {
         try {
             const accounts = await Account.find({
-                userId: req.body.userId,
+                userId: req.params.id,
             });
 
-            return res.status(201).send({ accounts: accounts });
+            return res.status(200).send({ accounts });
         } catch (e) {
-            console.log(e.message);
             res.status(500).send({ message: e.message });
         }
     }

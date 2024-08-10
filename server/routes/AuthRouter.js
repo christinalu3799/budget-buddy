@@ -12,7 +12,7 @@ AuthRouter.post('/login', AuthenticationService.loginUser);
 
 AuthRouter.put('/:id', AuthenticationService.updateUser);
 
-AuthRouter.delete('/logout', AuthenticationService.deleteUser);
+AuthRouter.delete('/logout', AuthenticationService.logoutUser);
 
 AuthRouter.delete('/:id', async (req, res) => {});
 

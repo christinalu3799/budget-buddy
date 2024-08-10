@@ -21,6 +21,7 @@ export const AuthProvider = ({ children }) => {
     const redirectToDashboard = () => {
         navigate('/dashboard');
     };
+
     return (
         <AuthContext.Provider
             value={{ user, login, logout, redirectToDashboard }}

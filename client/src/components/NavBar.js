@@ -39,7 +39,7 @@ const NavBar = () => {
             activeKey='/'
             className='bg-slate-100 w-full absolute flex flex-row justify-end'
         >
-            <NavLink name='HOME' showing={true} link='/' />
+            <NavLink name='DASHBOARD' showing={true} link='/dashboard' />
             <NavLink name='REGISTER' showing={true} link='/register' />
             <NavLink name='LOGIN' showing={true} link='/login' />
             <NavLink name='LOGOUT' showing={!!user} cb={handleLogout} />

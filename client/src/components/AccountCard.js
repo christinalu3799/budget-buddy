@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Card from 'react-bootstrap/Card';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import { useNavigate } from 'react-router-dom';
 
 const MyVerticallyCenteredModal = (props) => {
     const { accountName, ...otherProps } = props;
@@ -31,12 +32,17 @@ const MyVerticallyCenteredModal = (props) => {
 const AccountCard = ({ accountName, accountPreviewText }) => {
     const [modalShow, setModalShow] = useState(false);
 
+    const navigate = useNavigate();
+
+    const handleNavigateToTransactions = () => {
+        navigate('/transactions', { state: { accountName } });
+    };
     return (
         <>
             <Card
                 style={{ width: '24rem' }}
                 className='mt-4 mb-4'
-                onClick={() => setModalShow(true)}
+                onClick={handleNavigateToTransactions}
                 role='button'
             >
                 <Card.Body>

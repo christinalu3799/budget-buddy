@@ -7,13 +7,11 @@ res.status = jest.fn(() => res);
 describe(`loginUser`, () => {
     describe('credentials provided do not match a valid user', () => {
         beforeEach(async () => {
-            const req = {};
-            const passportAuthenticateImplementation =
-                (authType, callback) => () => {
-                    callback(null, null, 'Incorrect login credentials.');
-                };
-            passport.authenticate = jest.fn(passportAuthenticateImplementation);
+            passport.authenticate = jest.fn((authType, callback) => () => {
+                callback(null, null, 'Incorrect login credentials.');
+            });
 
+            const req = {};
             await AuthenticationService.loginUser(req, res);
         });
         it(`sends a status code of 401`, () => {
@@ -28,18 +26,16 @@ describe(`loginUser`, () => {
 
     describe(`credentials provided matches a valid user and request to login user fails`, () => {
         beforeEach(async () => {
-            const passportAuthenticateImplementation =
-                (authType, callback) => () => {
-                    callback(null, {}, null);
-                };
-
-            passport.authenticate = jest.fn(passportAuthenticateImplementation);
+            passport.authenticate = jest.fn((authType, callback) => () => {
+                callback(null, { name: 'test user' }, null);
+            });
 
             const req = {};
             req.logIn = jest.fn((user, callback) => {
                 callback(new Error('login error'));
             });
-            req.isAuthenticated = jest.fn();
+
+            req.isAuthenticated = jest.fn(() => true);
 
             jest.spyOn(AuthenticationService, '_throwRequestErrorAndResponse');
             await AuthenticationService.loginUser(req, res);
@@ -56,17 +52,16 @@ describe(`loginUser`, () => {
 
     describe(`credentials provided matches a valid user and request to login user is successful`, () => {
         beforeEach(async () => {
-            const passportAuthenticateImplementation =
-                (authType, callback) => () => {
-                    callback(null, {}, null);
-                };
+            passport.authenticate = jest.fn((authType, callback) => () => {
+                callback(null, { id: 123, name: 'test user' }, null);
+            });
 
-            passport.authenticate = jest.fn(passportAuthenticateImplementation);
             const req = {};
             req.logIn = jest.fn((user, callback) => {
                 callback(null);
             });
-            req.isAuthenticated = jest.fn(() => {});
+
+            req.isAuthenticated = jest.fn(() => true);
 
             await AuthenticationService.loginUser(req, res);
         });
@@ -75,7 +70,9 @@ describe(`loginUser`, () => {
         });
         it(`sends the success message`, async () => {
             expect(res.send).toHaveBeenCalledWith({
+                authenticated: true,
                 message: 'Login successfully',
+                userId: 123,
             });
         });
     });

@@ -1,19 +1,20 @@
 const express = require('express');
 const AuthRouter = express.Router();
 const AuthenticationService = require('../services/AuthenticationService.js');
+const UserRepo = require('../repos/UserRepo.js');
 
 AuthRouter.get('/users', AuthenticationService.findUsers);
 
 AuthRouter.get('/:id', AuthenticationService.findUser);
 
-AuthRouter.post('/register', AuthenticationService.registerNewUser);
+AuthRouter.post('/register', UserRepo.registerNewUser);
 
 AuthRouter.post('/login', AuthenticationService.loginUser);
 
-AuthRouter.put('/:id', AuthenticationService.updateUser);
+AuthRouter.put('/:id', UserRepo.updateUser);
 
 AuthRouter.delete('/logout', AuthenticationService.logoutUser);
 
-AuthRouter.delete('/:id', async (req, res) => {});
+AuthRouter.delete('/:id', UserRepo.deleteUser);
 
 module.exports = AuthRouter;

@@ -33,6 +33,7 @@ class AuthenticationService {
 
                 req.logIn(user, (err) => {
                     if (err) {
+                        // https://www.passportjs.org/concepts/authentication/login/
                         throw new Error(err);
                     }
 
@@ -49,16 +50,26 @@ class AuthenticationService {
     }
 
     async logoutUser(req, res) {
-        await req.logout((err) => {
-            if (err) {
-                return next(err);
+        try {
+            if (!req.isAuthenticated()) {
+                return res.status(400).send({
+                    message: 'You are not logged in.',
+                });
             }
 
-            return res.status(200).send({
-                authenticated: req.isAuthenticated(),
-                message: 'Logout successfully',
+            await req.logout((err) => {
+                if (err) {
+                    throw new Error(err);
+                }
+
+                return res.status(200).send({
+                    authenticated: req.isAuthenticated(),
+                    message: 'Logout successfully',
+                });
             });
-        });
+        } catch (e) {
+            return this._throwRequestErrorAndResponse(e, res);
+        }
     }
 
     _throwRequestErrorAndResponse = (e, res) => {

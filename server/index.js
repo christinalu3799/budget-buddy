@@ -60,6 +60,9 @@ app.use('/', AuthRouter);
 const AccountRouter = require('./routes/AccountRouter.js');
 app.use('/account', AccountRouter);
 
+const TransactionRouter = require('./routes/TransactionRouter.js');
+app.use('/transaction', TransactionRouter);
+
 mongoose
     .connect(mongoDBURL)
     .then(() => {

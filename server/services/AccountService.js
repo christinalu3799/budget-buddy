@@ -5,6 +5,7 @@ class AccountService {
 
     async findAccounts(req, res) {
         try {
+            // to do: add guard if not authenticated
             const accounts = await Account.find({
                 userId: req.params.id,
             });

@@ -18,26 +18,32 @@ class AccountRepo {
                 });
             }
 
-            const account = await Account.create({
+            await Account.create({
                 userId: req.user.id,
                 name,
                 startingBalance,
                 balance,
             });
 
-            return res.status(201).send({
-                message: 'Successfully created a new account',
-                isAuthenticated: req.isAuthenticated(),
-            });
+            return res
+                .status(201)
+                .send({ message: 'Successfully created a new account' });
         } catch (e) {
             return this._throwRequestErrorAndResponse(e, res);
         }
     }
 
     async update(req, res) {
-        const { userId, account, name, balanceAdjustment } = req.body;
+        if (!req.isAuthenticated()) {
+            return res.status(400).send({
+                message: 'You are not logged in.',
+            });
+        }
+
+        const { account, name, balanceAdjustment } = req.body;
+
         try {
-            if (!userId || !account || !name || !balanceAdjustment) {
+            if (!account || !name || !balanceAdjustment) {
                 return res.status(400).send({
                     message: 'Missing required fields.',
                 });
@@ -72,7 +78,7 @@ class AccountRepo {
             const { deletedCount } = await Account.deleteMany({ userId });
 
             return res.status(201).send({
-                message: 'Successfully updated account.',
+                message: 'Successfully deleted accounts.',
                 deletedCount,
             });
         } catch (e) {
